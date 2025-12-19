@@ -8,147 +8,66 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        body {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        body { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .card { background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 20px; margin-bottom: 16px; }
+        .result-card { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 12px; padding: 16px; border-left: 5px solid #667eea; width: 100%; }
+        .formula-text { font-family: 'Courier New', Courier, monospace; font-weight: bold; letter-spacing: 1px; color: #2d3748; word-break: break-all; font-size: 1.125rem; }
         
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-        
-        .result-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 12px;
-            padding: 16px;
-            border-left: 5px solid #667eea;
-            width: 100%;
-        }
-
-        .formula-text {
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            letter-spacing: 1px;
-            color: #2d3748;
-            word-break: break-all; 
-            font-size: 1.125rem;
-        }
-
-        .copy-btn {
-            cursor: pointer;
-            padding: 8px;
-            margin: -8px;
-            transition: all 0.2s;
-        }
-
-        .copy-btn:active {
-            transform: scale(0.9);
-            color: #4c51bf;
-        }
-
-        /* Tombol PDF Melayang */
+        /* Tombol Tampilkan PDF Melayang */
         .pdf-float {
-            position: fixed;
-            bottom: 25px;
-            right: 20px;
-            background-color: #ef4444;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            z-index: 100;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        .pdf-float:hover { transform: scale(1.1); }
-        .pdf-float:active { transform: scale(0.9); }
-
-        @media (max-width: 640px) {
-            .formula-text {
-                font-size: 1rem;
-            }
-            header h1 {
-                font-size: 1.875rem !important;
-            }
+            position: fixed; bottom: 25px; right: 20px; background-color: #ef4444; color: white;
+            width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 50; transition: all 0.3s;
         }
 
-        @view-transition { navigation: auto; }
+        /* MODAL VIEWER CSS */
+        #pdfModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 10px; flex-direction: column; }
+        #pdfModal.active { display: flex; }
+        .modal-content { flex-grow: 1; width: 100%; max-width: 900px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 20px; color: white; font-size: 30px; cursor: pointer; z-index: 1001; }
     </style>
 </head>
 <body class="gradient-bg">
 
-    <a href="https://raw.githubusercontent.com/djgtry-ui/Dj_Rubik/main/Dj_Rubik%203x3.pdf" 
-       target="_blank" 
-       title="Lihat Panduan PDF"
-       class="pdf-float">
-        <i class="fas fa-file-pdf text-2xl"></i>
-    </a>
+    <button onclick="openPdf()" class="pdf-float shadow-2xl active:scale-90">
+        <i class="fas fa-eye text-2xl"></i>
+    </button>
+
+    <div id="pdfModal">
+        <span class="close-modal" onclick="closePdf()">&times;</span>
+        <div class="text-white text-center mb-2 font-bold">Pratinjau Rumus PDF</div>
+        <div class="modal-content">
+            <iframe id="pdfIframe" src="" class="w-full h-full" frameborder="0"></iframe>
+        </div>
+    </div>
 
     <div id="app" class="w-full max-w-4xl mx-auto p-4 md:p-8">
         
         <header class="text-center mb-8 pt-4">
             <h1 class="text-white text-4xl font-bold mb-2">🧩 Rumus Rubik 3x3</h1>
-            <p class="text-white text-lg opacity-90 mb-4">Tutorial Praktis by Dj</p>
+            <p class="text-white text-lg opacity-90 mb-6">Tutorial Praktis by Dj</p>
             
-            <a href="https://raw.githubusercontent.com/djgtry-ui/Dj_Rubik/main/Dj_Rubik%203x3.pdf" 
-               target="_blank" 
-               class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-full text-sm font-bold transition shadow-xl active:scale-95">
-                <i class="fas fa-file-pdf"></i> Download PDF Rumus
-            </a>
+            <button onclick="openPdf()" class="inline-flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-full text-sm font-bold transition shadow-xl active:scale-95 hover:bg-gray-100">
+                <i class="fas fa-file-pdf"></i> TAMPILKAN FILE RUMUS
+            </button>
 
-            <div class="h-1.5 w-20 bg-white opacity-40 mx-auto mt-6 rounded-full"></div>
+            <div class="h-1.5 w-20 bg-white opacity-40 mx-auto mt-8 rounded-full"></div>
         </header>
 
         <div class="card border-l-8 border-green-500">
             <h2 class="text-xl font-bold text-green-600 mb-2 flex items-center">
                 <i class="fas fa-layer-group mr-3"></i> LAYER 1
             </h2>
-            <p class="text-gray-700 text-sm md:text-base">
-                Bebas, cari sendiri. Paling sederhana dan gampang buat IQ di atas 40, cukup fokus pada 1 layer saja sampai satu warna penuh.
-            </p>
+            <p class="text-gray-700">Fokus pada 1 layer sampai satu warna penuh.</p>
         </div>
 
         <div class="card border-l-8 border-blue-500">
             <h2 class="text-xl font-bold text-blue-600 mb-1 flex items-center">
                 <i class="fas fa-layer-group mr-3"></i> LAYER 2
             </h2>
-            <p class="text-xs text-orange-600 font-bold mb-3 italic">
-                (Posisikan layer 1 di sisi KIRI)
-            </p>
-            
-            <div class="space-y-3">
-                <div class="result-card">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-[10px] font-bold text-blue-800 uppercase tracking-wider">Ke arah ATAS:</span>
-                        <button onclick="copyText('F\' U\' R U R F R U F’')" class="copy-btn">
-                            <i class="far fa-copy text-blue-600"></i>
-                        </button>
-                    </div>
-                    <code class="formula-text">F' U' R U R F R U F’</code>
-                </div>
-                
-                <div class="result-card">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-[10px] font-bold text-blue-800 uppercase tracking-wider">Ke arah BAWAH:</span>
-                        <button onclick="copyText('U’ R U F')" class="copy-btn">
-                            <i class="far fa-copy text-blue-600"></i>
-                        </button>
-                    </div>
-                    <code class="formula-text">U’ R U F</code>
-                </div>
+            <div class="result-card mt-3">
+                <code class="formula-text">F' U' R U R F R U F’</code>
             </div>
         </div>
 
@@ -156,65 +75,8 @@
             <h2 class="text-xl font-bold text-red-600 mb-4 flex items-center">
                 <i class="fas fa-layer-group mr-3"></i> LAYER 3
             </h2>
-            
-            <div class="space-y-4">
-                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
-                    <h3 class="font-bold text-red-800 text-[10px] mb-1 uppercase tracking-widest">1. Membuat Cross (+)</h3>
-                    <div class="flex justify-between items-start gap-2">
-                        <code class="formula-text text-red-900">u R F R’ F’ u</code>
-                        <button onclick="copyText('u R F R’ F’ u')" class="copy-btn">
-                            <i class="far fa-copy text-red-600"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
-                    <h3 class="font-bold text-red-800 text-[10px] mb-1 uppercase tracking-widest">2. Menyamakan Warna Sisi</h3>
-                    <div class="flex justify-between items-start gap-2">
-                        <code class="formula-text text-red-900">U’ R’ U R U R U</code>
-                        <button onclick="copyText('U’ R’ U R U R U')" class="copy-btn">
-                            <i class="far fa-copy text-red-600"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
-                    <h3 class="font-bold text-red-800 text-[10px] mb-1 uppercase tracking-widest">3. Posisi Sudut (L3 di Atas)</h3>
-                    <div class="flex justify-between items-start gap-2">
-                        <code class="formula-text text-red-900">R U R’ U’ R’ F U R’ U R F RF</code>
-                        <button onclick="copyText('R U R’ U’ R’ F U R’ U R F RF')" class="copy-btn">
-                            <i class="far fa-copy text-red-600"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-gray-100 p-4 rounded-xl">
-                    <h3 class="font-bold text-gray-800 text-[10px] mb-2 uppercase tracking-widest">4. Finishing (Tukar Tengah)</h3>
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center bg-white p-2.5 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-gray-500">KIRI:</span>
-                            <code class="text-sm font-mono font-bold text-indigo-600">M2x U M’ U2x M U2x</code>
-                        </div>
-                        <div class="flex justify-between items-center bg-white p-2.5 rounded-lg shadow-sm">
-                            <span class="text-xs font-bold text-gray-500">KANAN:</span>
-                            <code class="text-sm font-mono font-bold text-indigo-600">M2x U’ M’ U2x M U2x</code>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gray-900 rounded-2xl p-5 text-white mb-8 shadow-2xl">
-            <h2 class="text-lg font-bold mb-4 flex items-center text-indigo-400">
-                <i class="fas fa-book-open mr-3"></i> Kamus Gerakan
-            </h2>
-            <div class="grid grid-cols-2 gap-3 text-[11px] opacity-90">
-                <div class="bg-gray-800 p-2 rounded"><strong>U</strong>: Atas</div>
-                <div class="bg-gray-800 p-2 rounded"><strong>F</strong>: Depan</div>
-                <div class="bg-gray-800 p-2 rounded"><strong>R</strong>: Kanan</div>
-                <div class="bg-gray-800 p-2 rounded"><strong>M</strong>: Tengah</div>
-                <div class="bg-gray-800 p-2 rounded"><strong>u</strong>: Dari Atas 2 Layer (1,2)</div>
-                <div class="bg-gray-800 p-2 rounded"><strong>'</strong>: Arah Lawan Jarum Jam</div>
+            <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                <code class="formula-text text-red-900">u R F R’ F’ u</code>
             </div>
         </div>
 
@@ -224,6 +86,32 @@
     </div>
 
     <script>
+        // Link file PDF Anda (Versi Raw agar bisa ditampilkan di Iframe)
+        const pdfUrl = "https://raw.githubusercontent.com/djgtry-ui/Dj_Rubik/main/Dj_Rubik%203x3.pdf";
+
+        function openPdf() {
+            const modal = document.getElementById('pdfModal');
+            const iframe = document.getElementById('pdfIframe');
+            
+            // Masukkan URL ke iframe hanya saat dibuka agar lebih ringan
+            iframe.src = pdfUrl;
+            modal.classList.add('active');
+            
+            // Matikan scroll body saat modal buka
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePdf() {
+            const modal = document.getElementById('pdfModal');
+            const iframe = document.getElementById('pdfIframe');
+            
+            modal.classList.remove('active');
+            iframe.src = ""; // Kosongkan lagi agar tidak memakan RAM
+            
+            // Aktifkan kembali scroll body
+            document.body.style.overflow = 'auto';
+        }
+
         function copyText(text) {
             const el = document.createElement('textarea');
             el.value = text;
@@ -233,24 +121,11 @@
             document.body.removeChild(el);
             
             const toast = document.createElement('div');
-            toast.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 bg-black/90 text-white px-4 py-2 rounded-full text-xs z-50';
+            toast.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-full text-xs z-50';
             toast.innerText = "Rumus disalin!";
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2000);
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(15px)';
-                card.style.transition = 'all 0.4s ease-out';
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 150);
-            });
-        });
     </script>
 </body>
 </html>
