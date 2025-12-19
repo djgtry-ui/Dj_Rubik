@@ -39,9 +39,8 @@
             font-weight: bold;
             letter-spacing: 1px;
             color: #2d3748;
-            /* Mencegah teks rumus terpotong di HP kecil */
             word-break: break-all; 
-            font-size: 1.125rem; /* text-lg */
+            font-size: 1.125rem;
         }
 
         .copy-btn {
@@ -56,12 +55,33 @@
             color: #4c51bf;
         }
 
+        /* Tombol PDF Melayang */
+        .pdf-float {
+            position: fixed;
+            bottom: 25px;
+            right: 20px;
+            background-color: #ef4444;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .pdf-float:hover { transform: scale(1.1); }
+        .pdf-float:active { transform: scale(0.9); }
+
         @media (max-width: 640px) {
             .formula-text {
-                font-size: 1rem; /* Sedikit lebih kecil di HP */
+                font-size: 1rem;
             }
             header h1 {
-                font-size: 1.875rem !important; /* text-3xl */
+                font-size: 1.875rem !important;
             }
         }
 
@@ -70,12 +90,26 @@
 </head>
 <body class="gradient-bg">
 
+    <a href="https://raw.githubusercontent.com/djgtry-ui/Dj_Rubik/main/Dj_Rubik%203x3.pdf" 
+       target="_blank" 
+       title="Lihat Panduan PDF"
+       class="pdf-float">
+        <i class="fas fa-file-pdf text-2xl"></i>
+    </a>
+
     <div id="app" class="w-full max-w-4xl mx-auto p-4 md:p-8">
         
         <header class="text-center mb-8 pt-4">
             <h1 class="text-white text-4xl font-bold mb-2">🧩 Rumus Rubik 3x3</h1>
-            <p class="text-white text-lg opacity-90">Tutorial Praktis by Dj</p>
-            <div class="h-1.5 w-20 bg-white opacity-40 mx-auto mt-3 rounded-full"></div>
+            <p class="text-white text-lg opacity-90 mb-4">Tutorial Praktis by Dj</p>
+            
+            <a href="https://raw.githubusercontent.com/djgtry-ui/Dj_Rubik/main/Dj_Rubik%203x3.pdf" 
+               target="_blank" 
+               class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-full text-sm font-bold transition shadow-xl active:scale-95">
+                <i class="fas fa-file-pdf"></i> Download PDF Rumus
+            </a>
+
+            <div class="h-1.5 w-20 bg-white opacity-40 mx-auto mt-6 rounded-full"></div>
         </header>
 
         <div class="card border-l-8 border-green-500">
@@ -198,9 +232,8 @@
             document.execCommand('copy');
             document.body.removeChild(el);
             
-            // Notifikasi sederhana yang tidak mengganggu di HP
             const toast = document.createElement('div');
-            toast.className = 'fixed bottom-10 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-full text-xs z-50';
+            toast.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 bg-black/90 text-white px-4 py-2 rounded-full text-xs z-50';
             toast.innerText = "Rumus disalin!";
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2000);
